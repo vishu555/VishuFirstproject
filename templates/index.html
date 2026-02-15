@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense Tracker</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body { 
+            background-color: #f8f9fa;
+            margin: 20px;
+        }
+        table {
+            margin-top: 20px;
+        }
+        .form-container {
+            padding: 20px;
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center">Expense Tracker</h1>
+        <div class="form-container">
+            <form id="expense-form">
+                <div class="form-group">
+                    <label for="description">Expense Description</label>
+                    <input type="text" class="form-control" id="description" required>
+                </div>
+                <div class="form-group">
+                    <label for="amount">Amount</label>
+                    <input type="number" class="form-control" id="amount" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Add Expense</button>
+            </form>
+        </div>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Description</th>
+                    <th>Amount</th>
+                </tr>
+            </thead>
+            <tbody id="expense-list">
+                <!-- Expenses will be added here -->
+            </tbody>
+        </table>
+    </div>
+    <script>
+        const form = document.getElementById('expense-form');
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+            const description = document.getElementById('description').value;
+            const amount = document.getElementById('amount').value;
+            const tableBody = document.getElementById('expense-list');
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `<td>${description}</td><td>${amount}</td>`;
+            tableBody.appendChild(newRow);
+            form.reset();
+        });
+    </script>
+</body>
+</html>
