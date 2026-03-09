@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import * as SecureStore from 'expo-secure-store';
+import { storage } from '../utils/storage';
 import api from '../utils/api';
 
 interface User {
@@ -30,8 +30,8 @@ export const useAuthStore = create<AuthState>((set) => ({
       const response = await api.post('/auth/login', { email, password });
       const { access_token, user } = response.data;
       
-      await SecureStore.setItemAsync('authToken', access_token);
-      await SecureStore.setItemAsync('userData', JSON.stringify(user));
+      await storage.setItem('authToken', access_token);
+      await storage.setItem('userData', JSON.stringify(user));
       
       set({ user, token: access_token, isAuthenticated: true });
     } catch (error: any) {
@@ -41,28 +41,34 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   register: async (name: string, email: string, password: string) => {
     try {
+      console.log('Registration attempt:', { name, email });
       const response = await api.post('/auth/register', { name, email, password });
+      console.log('Registration response received:', response.status);
       const { access_token, user } = response.data;
       
-      await SecureStore.setItemAsync('authToken', access_token);
-      await SecureStore.setItemAsync('userData', JSON.stringify(user));
+      console.log('Storing auth token...');
+      await storage.setItem('authToken', access_token);
+      await storage.setItem('userData', JSON.stringify(user));
       
+      console.log('Registration successful, updating state');
       set({ user, token: access_token, isAuthenticated: true });
     } catch (error: any) {
-      throw new Error(error.response?.data?.detail || 'Registration failed');
+      console.error('Registration error:', error);
+      console.error('Error response:', error.response?.data);
+      throw new Error(error.response?.data?.detail || error.message || 'Registration failed');
     }
   },
 
   logout: async () => {
-    await SecureStore.deleteItemAsync('authToken');
-    await SecureStore.deleteItemAsync('userData');
+    await storage.deleteItem('authToken');
+    await storage.deleteItem('userData');
     set({ user: null, token: null, isAuthenticated: false });
   },
 
   loadStoredAuth: async () => {
     try {
-      const token = await SecureStore.getItemAsync('authToken');
-      const userDataStr = await SecureStore.getItemAsync('userData');
+      const token = await storage.getItem('authToken');
+      const userDataStr = await storage.getItem('userData');
       
       if (token && userDataStr) {
         const user = JSON.parse(userDataStr);
