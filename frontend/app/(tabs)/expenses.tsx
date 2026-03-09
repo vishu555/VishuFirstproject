@@ -132,7 +132,7 @@ export default function ExpensesScreen() {
                 <Text style={styles.expenseDate}>{expense.date}</Text>
                 {expense.notes ? <Text style={styles.expenseNotes}>{expense.notes}</Text> : null}
               </View>
-              <Text style={styles.expenseAmount}>-${currencySymbol}{?expense.amount.toFixed(2)}</Text>
+              <Text style={styles.expenseAmount}>-{currencySymbol}{expense.amount.toFixed(2)}</Text>
             </TouchableOpacity>
           ))
         )}

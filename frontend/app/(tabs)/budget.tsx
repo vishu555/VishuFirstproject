@@ -141,8 +141,8 @@ export default function BudgetScreen() {
                 </View>
 
                 <View style={styles.budgetAmounts}>
-                  <Text style={styles.spentAmount}>${currencySymbol}{?budget.spent.toFixed(2)}</Text>
-                  <Text style={styles.limitAmount}>of ${currencySymbol}{?budget.limit.toFixed(2)}</Text>
+                  <Text style={styles.spentAmount}>{currencySymbol}{budget.spent.toFixed(2)}</Text>
+                  <Text style={styles.limitAmount}>of {currencySymbol}{budget.limit.toFixed(2)}</Text>
                 </View>
 
                 <View style={styles.progressBarContainer}>
@@ -161,7 +161,7 @@ export default function BudgetScreen() {
 
                 {isOverBudget && (
                   <Text style={styles.overBudgetText}>
-                    Over budget by ${(budget.spent - budget.limit).toFixed(2)}
+                    Over budget by {currencySymbol}{(budget.spent - budget.limit).toFixed(2)}
                   </Text>
                 )}
               </TouchableOpacity>

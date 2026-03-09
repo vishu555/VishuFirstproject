@@ -101,7 +101,7 @@ export default function IncomeScreen() {
 
       <View style={styles.summaryCard}>
         <Text style={styles.summaryLabel}>Total Income</Text>
-        <Text style={styles.summaryAmount}>${currencySymbol}{?totalIncome.toFixed(2)}</Text>
+        <Text style={styles.summaryAmount}>{currencySymbol}{totalIncome.toFixed(2)}</Text>
       </View>
 
       <ScrollView
@@ -130,7 +130,7 @@ export default function IncomeScreen() {
                 <Text style={styles.incomeDate}>{inc.date}</Text>
                 {inc.notes ? <Text style={styles.incomeNotes}>{inc.notes}</Text> : null}
               </View>
-              <Text style={styles.incomeAmount}>+${currencySymbol}{?inc.amount.toFixed(2)}</Text>
+              <Text style={styles.incomeAmount}>+{currencySymbol}{inc.amount.toFixed(2)}</Text>
             </TouchableOpacity>
           ))
         )}
