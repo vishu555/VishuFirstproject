@@ -101,6 +101,7 @@ export default function BudgetScreen() {
       </View>
 
       <ScrollView
+        contentContainerStyle={{ paddingBottom: 100 }}
         style={styles.scrollView}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#4CAF50']} />}
       >
