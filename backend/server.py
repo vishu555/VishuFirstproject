@@ -55,10 +55,20 @@ class UserRegister(BaseModel):
     name: str
     email: EmailStr
     password: str
+    currency: Optional[str] = "USD"
 
 class UserLogin(BaseModel):
     email: EmailStr
     password: str
+
+class UserProfile(BaseModel):
+    name: str
+    email: str
+    currency: str
+    
+class UserProfileUpdate(BaseModel):
+    name: Optional[str] = None
+    currency: Optional[str] = None
 
 class Token(BaseModel):
     access_token: str
@@ -177,6 +187,7 @@ async def register(user_data: UserRegister):
         "name": user_data.name,
         "email": user_data.email,
         "password": hashed_password,
+        "currency": user_data.currency,
         "created_at": datetime.utcnow().isoformat()
     }
     
@@ -210,6 +221,38 @@ async def login(user_data: UserLogin):
         "token_type": "bearer",
         "user": user
     }
+
+# ========== Profile Routes ==========
+
+@api_router.get("/profile", response_model=UserProfile)
+async def get_profile(current_user: dict = Depends(get_current_user)):
+    return {
+        "name": current_user.get("name", ""),
+        "email": current_user.get("email", ""),
+        "currency": current_user.get("currency", "USD")
+    }
+
+@api_router.put("/profile")
+async def update_profile(profile_data: UserProfileUpdate, current_user: dict = Depends(get_current_user)):
+    update_data = {}
+    if profile_data.name:
+        update_data["name"] = profile_data.name
+    if profile_data.currency:
+        update_data["currency"] = profile_data.currency
+    
+    if update_data:
+        await db.users.update_one(
+            {"_id": ObjectId(current_user["id"])},
+            {"$set": update_data}
+        )
+    
+    # Get updated user
+    user = await db.users.find_one({"_id": ObjectId(current_user["id"])})
+    user["id"] = str(user["_id"])
+    user.pop("password")
+    user.pop("_id", None)
+    
+    return {"message": "Profile updated successfully", "user": user}
 
 # ========== Income Routes ==========
 

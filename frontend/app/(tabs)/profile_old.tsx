@@ -1,18 +1,15 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, Modal } from 'react-native';
+import React from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useAuthStore } from '@/store/authStore';
 import { useDataStore } from '@/store/dataStore';
-import { CURRENCIES, getCurrencySymbol } from '@/constants/currencies';
 
 export default function ProfileScreen() {
   const router = useRouter();
-  const { user, logout, updateProfile } = useAuthStore();
+  const { user, logout } = useAuthStore();
   const { analytics } = useDataStore();
-  const [currencyModalVisible, setCurrencyModalVisible] = useState(false);
-  const [selectedCurrency, setSelectedCurrency] = useState(user?.currency || 'USD');
 
   const handleLogout = () => {
     Alert.alert('Logout', 'Are you sure you want to logout?', [
@@ -27,20 +24,6 @@ export default function ProfileScreen() {
       },
     ]);
   };
-
-  const handleCurrencyChange = async (currencyCode: string) => {
-    try {
-      setSelectedCurrency(currencyCode);
-      await updateProfile(undefined, currencyCode);
-      setCurrencyModalVisible(false);
-      Alert.alert('Success', 'Currency updated successfully');
-    } catch (error: any) {
-      Alert.alert('Error', error.message);
-    }
-  };
-
-  const currentCurrency = user?.currency || 'USD';
-  const currencySymbol = getCurrencySymbol(currentCurrency);
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
@@ -58,33 +41,19 @@ export default function ProfileScreen() {
         <View style={styles.statsContainer}>
           <View style={styles.statCard}>
             <Ionicons name="trending-up" size={24} color="#4CAF50" />
-            <Text style={styles.statValue}>{currencySymbol}{analytics?.total_income?.toFixed(2) || '0.00'}</Text>
+            <Text style={styles.statValue}>${analytics?.total_income?.toFixed(2) || '0.00'}</Text>
             <Text style={styles.statLabel}>Total Income</Text>
           </View>
           <View style={styles.statCard}>
-            <Ionicons name="trending-down" size={24} color="##F44336" />
-            <Text style={styles.statValue}>{currencySymbol}{analytics?.total_expenses?.toFixed(2) || '0.00'}</Text>
+            <Ionicons name="trending-down" size={24} color="#F44336" />
+            <Text style={styles.statValue}>${analytics?.total_expenses?.toFixed(2) || '0.00'}</Text>
             <Text style={styles.statLabel}>Total Expenses</Text>
           </View>
         </View>
 
         {/* Menu Options */}
         <View style={styles.menuSection}>
-          <Text style={styles.sectionTitle}>Preferences</Text>
-
-          <TouchableOpacity 
-            style={styles.menuItem}
-            onPress={() => setCurrencyModalVisible(true)}
-          >
-            <View style={styles.menuIconContainer}>
-              <Ionicons name="cash-outline" size={24} color="#666" />
-            </View>
-            <View style={styles.menuTextContainer}>
-              <Text style={styles.menuText}>Currency</Text>
-              <Text style={styles.menuSubtext}>{currentCurrency} ({currencySymbol})</Text>
-            </View>
-            <Ionicons name="chevron-forward" size={20} color="#999" />
-          </TouchableOpacity>
+          <Text style={styles.sectionTitle}>Settings</Text>
 
           <TouchableOpacity style={styles.menuItem}>
             <View style={styles.menuIconContainer}>
@@ -131,49 +100,6 @@ export default function ProfileScreen() {
           <Text style={styles.logoutText}>Logout</Text>
         </TouchableOpacity>
       </ScrollView>
-
-      {/* Currency Selection Modal */}
-      <Modal
-        visible={currencyModalVisible}
-        animationType="slide"
-        transparent={true}
-        onRequestClose={() => setCurrencyModalVisible(false)}
-      >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Select Currency</Text>
-              <TouchableOpacity onPress={() => setCurrencyModalVisible(false)}>
-                <Ionicons name="close" size={28} color="#333" />
-              </TouchableOpacity>
-            </View>
-
-            <ScrollView style={styles.currencyList}>
-              {CURRENCIES.map((currency) => (
-                <TouchableOpacity
-                  key={currency.code}
-                  style={[
-                    styles.currencyItem,
-                    selectedCurrency === currency.code && styles.currencyItemSelected,
-                  ]}
-                  onPress={() => handleCurrencyChange(currency.code)}
-                >
-                  <View style={styles.currencyInfo}>
-                    <Text style={styles.currencySymbol}>{currency.symbol}</Text>
-                    <View style={styles.currencyDetails}>
-                      <Text style={styles.currencyCode}>{currency.code}</Text>
-                      <Text style={styles.currencyName}>{currency.name}</Text>
-                    </View>
-                  </View>
-                  {selectedCurrency === currency.code && (
-                    <Ionicons name="checkmark-circle" size={24} color="#4CAF50" />
-                  )}
-                </TouchableOpacity>
-              ))}
-            </ScrollView>
-          </View>
-        </View>
-      </Modal>
     </SafeAreaView>
   );
 }
@@ -263,17 +189,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginRight: 16,
   },
-  menuTextContainer: {
-    flex: 1,
-  },
   menuText: {
+    flex: 1,
     fontSize: 16,
     color: '#333',
-  },
-  menuSubtext: {
-    fontSize: 14,
-    color: '#999',
-    marginTop: 2,
   },
   appInfo: {
     alignItems: 'center',
@@ -306,73 +225,5 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#F44336',
     marginLeft: 12,
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    justifyContent: 'flex-end',
-  },
-  modalContent: {
-    backgroundColor: '#FFFFFF',
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    paddingTop: 24,
-    maxHeight: '80%',
-  },
-  modalHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 24,
-    marginBottom: 16,
-  },
-  modalTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#333',
-  },
-  currencyList: {
-    paddingHorizontal: 24,
-    paddingBottom: 24,
-  },
-  currencyItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: 16,
-    paddingHorizontal: 16,
-    borderRadius: 12,
-    marginBottom: 8,
-    backgroundColor: '#F8F9FA',
-  },
-  currencyItemSelected: {
-    backgroundColor: '#E8F5E9',
-    borderWidth: 2,
-    borderColor: '#4CAF50',
-  },
-  currencyInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
-  },
-  currencySymbol: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#333',
-    width: 50,
-    textAlign: 'center',
-  },
-  currencyDetails: {
-    marginLeft: 16,
-  },
-  currencyCode: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#333',
-  },
-  currencyName: {
-    fontSize: 14,
-    color: '#666',
-    marginTop: 2,
   },
 });

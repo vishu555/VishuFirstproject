@@ -6,6 +6,7 @@ interface User {
   id: string;
   name: string;
   email: string;
+  currency?: string;
 }
 
 interface AuthState {
@@ -14,9 +15,11 @@ interface AuthState {
   isLoading: boolean;
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
-  register: (name: string, email: string, password: string) => Promise<void>;
+  register: (name: string, email: string, password: string, currency?: string) => Promise<void>;
+  updateProfile: (name?: string, currency?: string) => Promise<void>;
   logout: () => Promise<void>;
   loadStoredAuth: () => Promise<void>;
+  getCurrency: () => string;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
@@ -45,10 +48,10 @@ export const useAuthStore = create<AuthState>((set) => ({
     }
   },
 
-  register: async (name: string, email: string, password: string) => {
+  register: async (name: string, email: string, password: string, currency: string = 'USD') => {
     try {
-      console.log('Registration attempt:', { name, email });
-      const response = await api.post('/auth/register', { name, email, password });
+      console.log('Registration attempt:', { name, email, currency });
+      const response = await api.post('/auth/register', { name, email, password, currency });
       console.log('Registration response received:', response.status);
       const { access_token, user } = response.data;
       
@@ -62,6 +65,18 @@ export const useAuthStore = create<AuthState>((set) => ({
       console.error('Registration error:', error);
       console.error('Error response:', error.response?.data);
       throw new Error(error.response?.data?.detail || error.message || 'Registration failed');
+    }
+  },
+
+  updateProfile: async (name?: string, currency?: string) => {
+    try {
+      const response = await api.put('/profile', { name, currency });
+      const { user } = response.data;
+      
+      await storage.setItem('userData', JSON.stringify(user));
+      set({ user });
+    } catch (error: any) {
+      throw new Error(error.response?.data?.detail || error.message || 'Update failed');
     }
   },
 
@@ -85,5 +100,10 @@ export const useAuthStore = create<AuthState>((set) => ({
     } catch (error) {
       set({ isLoading: false });
     }
+  },
+
+  getCurrency: () => {
+    const state = useAuthStore.getState();
+    return state.user?.currency || 'USD';
   },
 }));
