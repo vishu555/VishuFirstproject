@@ -15,6 +15,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useDataStore } from '@/store/dataStore';
 import { EXPENSE_CATEGORIES, getCategoryColor } from '@/constants/categories';
+import { useCurrency } from '@/utils/useCurrency';
 
 export default function BudgetScreen() {
   const { budgets, fetchBudgets, addBudget, deleteBudget } = useDataStore();
