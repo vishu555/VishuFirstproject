@@ -14,6 +14,7 @@ import { useAuthStore } from '@/store/authStore';
 import { useDataStore } from '@/store/dataStore';
 import { BarChart } from 'react-native-gifted-charts';
 import { getCategoryColor } from '@/constants/categories';
+import { useCurrency } from '@/utils/useCurrency';
 
 const { width } = Dimensions.get('window');
 
@@ -21,6 +22,7 @@ export default function DashboardScreen() {
   const { user } = useAuthStore();
   const { analytics, expenses, fetchAnalytics, fetchExpenses, refreshAll, isLoading } = useDataStore();
   const [refreshing, setRefreshing] = useState(false);
+  const { currencySymbol } = useCurrency();
 
   useEffect(() => {
     loadData();
@@ -76,19 +78,19 @@ export default function DashboardScreen() {
         <View style={styles.balanceCard}>
           <Text style={styles.balanceLabel}>Total Balance</Text>
           <Text style={styles.balanceAmount}>
-            ${analytics?.remaining_balance?.toFixed(2) || '0.00'}
+            ${currencySymbol}{?analytics?.remaining_balance?.toFixed(2) || '0.00'}
           </Text>
           <View style={styles.balanceDetails}>
             <View style={styles.balanceItem}>
               <Ionicons name="arrow-down-circle" size={20} color="#4CAF50" />
               <Text style={styles.balanceItemLabel}>Income</Text>
-              <Text style={styles.balanceItemValue}>${analytics?.total_income?.toFixed(2) || '0.00'}</Text>
+              <Text style={styles.balanceItemValue}>${currencySymbol}{?analytics?.total_income?.toFixed(2) || '0.00'}</Text>
             </View>
             <View style={styles.balanceDivider} />
             <View style={styles.balanceItem}>
               <Ionicons name="arrow-up-circle" size={20} color="#F44336" />
               <Text style={styles.balanceItemLabel}>Expenses</Text>
-              <Text style={styles.balanceItemValue}>${analytics?.total_expenses?.toFixed(2) || '0.00'}</Text>
+              <Text style={styles.balanceItemValue}>${currencySymbol}{?analytics?.total_expenses?.toFixed(2) || '0.00'}</Text>
             </View>
           </View>
         </View>
@@ -100,12 +102,12 @@ export default function DashboardScreen() {
             <View style={[styles.summaryCard, { backgroundColor: '#E8F5E9' }]}>
               <Ionicons name="trending-up" size={24} color="#4CAF50" />
               <Text style={styles.summaryLabel}>Income</Text>
-              <Text style={styles.summaryValue}>${analytics?.monthly_income?.toFixed(2) || '0.00'}</Text>
+              <Text style={styles.summaryValue}>${currencySymbol}{?analytics?.monthly_income?.toFixed(2) || '0.00'}</Text>
             </View>
             <View style={[styles.summaryCard, { backgroundColor: '#FFEBEE' }]}>
               <Ionicons name="trending-down" size={24} color="#F44336" />
               <Text style={styles.summaryLabel}>Expenses</Text>
-              <Text style={styles.summaryValue}>${analytics?.monthly_expenses?.toFixed(2) || '0.00'}</Text>
+              <Text style={styles.summaryValue}>${currencySymbol}{?analytics?.monthly_expenses?.toFixed(2) || '0.00'}</Text>
             </View>
             <View style={[styles.summaryCard, { backgroundColor: '#E3F2FD' }]}>
               <Ionicons name="save" size={24} color="#2196F3" />
@@ -155,7 +157,7 @@ export default function DashboardScreen() {
                 <Text style={styles.transactionCategory}>{expense.category}</Text>
                 <Text style={styles.transactionDate}>{expense.date}</Text>
               </View>
-              <Text style={styles.transactionAmount}>-${expense.amount.toFixed(2)}</Text>
+              <Text style={styles.transactionAmount}>-{currencySymbol}{expense.amount.toFixed(2)}</Text>
             </View>
           ))}
           {expenses.length === 0 && (

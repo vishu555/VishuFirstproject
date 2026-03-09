@@ -23,6 +23,7 @@ export default function BudgetScreen() {
   const [category, setCategory] = useState('Food');
   const [limit, setLimit] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { currencySymbol } = useCurrency();
 
   useEffect(() => {
     fetchBudgets();
@@ -140,8 +141,8 @@ export default function BudgetScreen() {
                 </View>
 
                 <View style={styles.budgetAmounts}>
-                  <Text style={styles.spentAmount}>${budget.spent.toFixed(2)}</Text>
-                  <Text style={styles.limitAmount}>of ${budget.limit.toFixed(2)}</Text>
+                  <Text style={styles.spentAmount}>${currencySymbol}{?budget.spent.toFixed(2)}</Text>
+                  <Text style={styles.limitAmount}>of ${currencySymbol}{?budget.limit.toFixed(2)}</Text>
                 </View>
 
                 <View style={styles.progressBarContainer}>

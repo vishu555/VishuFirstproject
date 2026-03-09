@@ -16,6 +16,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useDataStore } from '@/store/dataStore';
 import { EXPENSE_CATEGORIES, getCategoryColor, getCategoryIcon } from '@/constants/categories';
 import { format } from 'date-fns';
+import { useCurrency } from '@/utils/useCurrency';
 
 export default function ExpensesScreen() {
   const { expenses, fetchExpenses, addExpense, deleteExpense } = useDataStore();
@@ -26,6 +27,7 @@ export default function ExpensesScreen() {
   const [date, setDate] = useState(format(new Date(), 'yyyy-MM-dd'));
   const [notes, setNotes] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { currencySymbol } = useCurrency();
 
   useEffect(() => {
     fetchExpenses();
@@ -130,7 +132,7 @@ export default function ExpensesScreen() {
                 <Text style={styles.expenseDate}>{expense.date}</Text>
                 {expense.notes ? <Text style={styles.expenseNotes}>{expense.notes}</Text> : null}
               </View>
-              <Text style={styles.expenseAmount}>-${expense.amount.toFixed(2)}</Text>
+              <Text style={styles.expenseAmount}>-${currencySymbol}{?expense.amount.toFixed(2)}</Text>
             </TouchableOpacity>
           ))
         )}

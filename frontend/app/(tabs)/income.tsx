@@ -16,6 +16,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useDataStore } from '@/store/dataStore';
 import { INCOME_SOURCES } from '@/constants/categories';
 import { format } from 'date-fns';
+import { useCurrency } from '@/utils/useCurrency';
 
 export default function IncomeScreen() {
   const { income, fetchIncome, addIncome, deleteIncome } = useDataStore();
@@ -26,6 +27,7 @@ export default function IncomeScreen() {
   const [date, setDate] = useState(format(new Date(), 'yyyy-MM-dd'));
   const [notes, setNotes] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { currencySymbol } = useCurrency();
 
   useEffect(() => {
     fetchIncome();
@@ -99,7 +101,7 @@ export default function IncomeScreen() {
 
       <View style={styles.summaryCard}>
         <Text style={styles.summaryLabel}>Total Income</Text>
-        <Text style={styles.summaryAmount}>${totalIncome.toFixed(2)}</Text>
+        <Text style={styles.summaryAmount}>${currencySymbol}{?totalIncome.toFixed(2)}</Text>
       </View>
 
       <ScrollView
@@ -128,7 +130,7 @@ export default function IncomeScreen() {
                 <Text style={styles.incomeDate}>{inc.date}</Text>
                 {inc.notes ? <Text style={styles.incomeNotes}>{inc.notes}</Text> : null}
               </View>
-              <Text style={styles.incomeAmount}>+${inc.amount.toFixed(2)}</Text>
+              <Text style={styles.incomeAmount}>+${currencySymbol}{?inc.amount.toFixed(2)}</Text>
             </TouchableOpacity>
           ))
         )}
