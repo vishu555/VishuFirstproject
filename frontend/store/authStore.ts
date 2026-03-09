@@ -27,15 +27,21 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   login: async (email: string, password: string) => {
     try {
+      console.log('Login attempt:', { email });
       const response = await api.post('/auth/login', { email, password });
+      console.log('Login response received:', response.status);
       const { access_token, user } = response.data;
       
+      console.log('Storing auth token...');
       await storage.setItem('authToken', access_token);
       await storage.setItem('userData', JSON.stringify(user));
       
+      console.log('Login successful, updating state');
       set({ user, token: access_token, isAuthenticated: true });
     } catch (error: any) {
-      throw new Error(error.response?.data?.detail || 'Login failed');
+      console.error('Login error:', error);
+      console.error('Error response:', error.response?.data);
+      throw new Error(error.response?.data?.detail || error.message || 'Login failed');
     }
   },
 
