@@ -10,10 +10,10 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { useAuthStore } from '../../store/authStore';
-import { useDataStore } from '../../store/dataStore';
+import { useAuthStore } from '@/store/authStore';
+import { useDataStore } from '@/store/dataStore';
 import { BarChart } from 'react-native-gifted-charts';
-import { getCategoryColor } from '../../constants/categories';
+import { getCategoryColor } from '@/constants/categories';
 
 const { width } = Dimensions.get('window');
 

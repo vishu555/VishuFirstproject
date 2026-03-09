@@ -13,8 +13,8 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { useDataStore } from '../../store/dataStore';
-import { EXPENSE_CATEGORIES, getCategoryColor, getCategoryIcon } from '../../constants/categories';
+import { useDataStore } from '@/store/dataStore';
+import { EXPENSE_CATEGORIES, getCategoryColor, getCategoryIcon } from '@/constants/categories';
 import { format } from 'date-fns';
 
 export default function ExpensesScreen() {

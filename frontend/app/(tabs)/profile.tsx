@@ -3,8 +3,8 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'rea
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { useAuthStore } from '../../store/authStore';
-import { useDataStore } from '../../store/dataStore';
+import { useAuthStore } from '@/store/authStore';
+import { useDataStore } from '@/store/dataStore';
 
 export default function ProfileScreen() {
   const router = useRouter();
