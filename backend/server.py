@@ -1,5 +1,7 @@
 from fastapi import FastAPI, APIRouter, HTTPException, Depends, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -32,6 +34,16 @@ security = HTTPBearer()
 # Create the main app
 app = FastAPI()
 api_router = APIRouter(prefix="/api")
+
+# Add validation error handler
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request, exc):
+    logger.error(f"Validation error for {request.url}: {exc}")
+    logger.error(f"Request body: {await request.body()}")
+    return JSONResponse(
+        status_code=422,
+        content={"detail": exc.errors(), "body": str(await request.body())},
+    )
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -152,9 +164,11 @@ def serialize_doc(doc):
 
 @api_router.post("/auth/register", response_model=Token)
 async def register(user_data: UserRegister):
+    logger.info(f"Registration attempt for email: {user_data.email}")
     # Check if user already exists
     existing_user = await db.users.find_one({"email": user_data.email})
     if existing_user:
+        logger.warning(f"Email already registered: {user_data.email}")
         raise HTTPException(status_code=400, detail="Email already registered")
     
     # Create new user
